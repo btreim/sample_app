@@ -7,12 +7,12 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "user should be valid" do
-    assert @user.valid? 
+    assert @user.valid?
   end
 
 
   test "name should be present" do
-    @user.name = "    "
+    @user.name = "    " 
     assert_not @user.valid?
   end
 
@@ -49,14 +49,14 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  test "email addresses should be unique" do 
+  test "email addresses should be unique" do
   	duplicate = @user.dup
   	duplicate.email = @user.email.upcase
   	@user.save
   	assert_not duplicate.valid?
   end
 
-  test "email address should be converted to downcase before save" do 
+  test "email address should be converted to downcase before save" do
   	upcase_email = %w[fEkl@bar.cOm TEST@ME.COM down@case.net]
   	upcase_email.each do | email |
   		@user.email = email
@@ -65,7 +65,7 @@ class UserTest < ActiveSupport::TestCase
   	end
   end
 
-  test "password should not be blank" do 
+  test "password should not be blank" do
   	@user.password = @user.password_confirmation = " " * 6
   	assert_not @user.valid?
   end
@@ -75,8 +75,16 @@ class UserTest < ActiveSupport::TestCase
   	assert_not @user.valid?
   end
 
-  test "authenticated? should return false for a user with nil digest" do 
+  test "authenticated? should return false for a user with nil digest" do
     assert_not @user.authenticated?(:remember, '')
+  end
+
+  test "associated microposts should be deleted" do
+    @user.save
+    @user.microposts.create!(content:"lorem")
+    assert_difference "Micropost.count", -1 do
+      @user.destroy
+    end
   end
 
 end
